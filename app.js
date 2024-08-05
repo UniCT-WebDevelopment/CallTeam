@@ -2,7 +2,11 @@ const express = require("express");
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http)
+const env = require("dotenv").config()
 
-http.listen(3000, () => {
-    console.log("Server in ascolto sulla porta 3000")
+app.use(express.json());
+app.use(express.static("./public"));
+
+http.listen(process.env.PORT, () => {
+    console.log(`Server in ascolto sulla porta ${process.env.PORT}`);
 })
