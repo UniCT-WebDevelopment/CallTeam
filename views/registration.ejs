@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/output.css">
+    <title>Document</title>
+</head>
+<body>
+    <body class="h-full bg-gray-950 text-white flex flex-col justify-center items-center">
+        <div id="register-container">
+            <div class="text-2xl font-bold text-center">Register a new account</div>
+          <form id="signup-form" class="flex flex-col justify-around p-2 sm:px-8 px-6 sm:w-full sm:mx-auto sm:max-w-sm mt-10">
+              <div id="name-group" class="w-full mb-5 flex justify-start">
+                  <div class="mx-1">
+                      <label for="name" class="block mb-2 text-sm leading-6 font-semibold">Name</label>
+                      <input class="block bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 w-full p-2" type="text" name="username" id="name">
+                  </div>
+                  <div class="mx-1">
+                      <label for="name" class="block mb-2 text-sm leading-6 font-semibold">Surname</label>
+                      <input class="block bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 w-full p-2" type="text" name="username" id="surname">
+                  </div>
+              </div>
+            <div id="username-group" class="mb-5">
+              <label for="username" class="block mb-2 text-sm leading-6 font-semibold">Username</label>
+              <input class="block bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 w-full p-2" type="text" name="username" id="username">
+            </div>
+            <div id="password-group" class="mb-5">
+              <label for="password" class="block mb-2 text-sm leading-6 font-semibold">Password</label>
+              <input class="block bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 w-full p-2" type="password" name="password" id="password">
+            </div>
+            <button class="w-full bg-green-900 text-black hover:bg-green-800 rounded-lg p-2 font-semibold" id="btn-submit-signup" type="button">Registrati</button>
+          </form>
+        </div>
+        
+        <div id="register-feedback" class="hidden">
+          <div class="text-3xl font-bold text-center">Congratulazioni! Il tuo account &egrave; stato correttamente registrato</div>
+          <div class="my-10 text-sm font-semibold text-center">Torna al <a class="text-green-900 hover:text-green-800" href="/signup">login</a></div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="/assets/js/registration.js"></script>
+</body>
+  
+</body>
+</html>
