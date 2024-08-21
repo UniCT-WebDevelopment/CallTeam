@@ -1,0 +1,5 @@
+#call-container{
+    display: grid;
+    grid-template-rows: 1fr 70px;
+    grid-template-columns: 1fr 300px;
+}

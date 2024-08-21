@@ -1,20 +1,26 @@
 const { Sequelize } = require("sequelize");
 const User = require("../models/user");
+const Call = require("../models/call");
+const CallParticipants = require("../models/callParticipants");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
 
-(async (sequelize) => {
-  //testing the connection
-  try {
-    await sequelize.authenticate();
-    console.log("Connected to DB");
+const initDbSchema = async (sequelize) => {
+    //testing the connection
+    try {
+        await sequelize.authenticate();
+        console.log("Connected to DB");
 
-    //sync models
-    await User.sync({ alter: true });
+        //sync models
+        await User.sync();
+        await Call.sync();
+        await CallParticipants.sync();
 
-    console.log("Models synced to DB");
-  } catch (error) {
-    console.error("Unable to connect to DB", error);
-    exit(1);
-  }
-})(sequelize);
+        console.log("Models synced to DB");
+    } catch (error) {
+        console.error("Unable to connect to DB", error);
+        exit(1);
+    }
+};
+
+module.exports = initDbSchema;

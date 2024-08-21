@@ -1,12 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
-        <link rel="stylesheet" href="assets/css/output.css" />
+        <link rel="stylesheet" href="/assets/css/output.css" />
     </head>
-    <body class="bg-gray-950 text-white">
-        <h1>Dashboard <%= userId %></h1>
+    <body class="bg-gray-950 text-white h-full">
+        <div
+            class="w-full h-full flex flex-col lg:flex-row items-center justify-evenly"
+        >
+            <div id="create-call-container" class="p-3 m-2">
+                <div class="font-extrabold text-2xl my-4 mx-2 p-2">
+                    Chiama chi vuoi
+                </div>
+                <div id="action-call-container">
+                    <button
+                        id="btn-new-call"
+                        class="bg-green-900 text-black font-medium hover:bg-green-800 rounded-lg p-2 mx-4"
+                    >
+                        Nuova Riunione</button
+                    ><input
+                        type="text"
+                        class="bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 p-2 mx-1 placeholder:text-gray-400"
+                        placeholder="Inserisci un codice"
+                    /><button
+                        id="btn-participate-call"
+                        class="bg-green-900 text-black hover:bg-green-800 rounded-lg p-2 mx-1 font-medium"
+                    >
+                        Partecipa
+                    </button>
+                </div>
+            </div>
+
+            <div id="friends-online" class="p-3 m-2 w-80">
+                <div class="font-bold text-xl text-center my-4">
+                    Chiamate recenti
+                </div>
+                <div id="recent-calls-container">
+                    <ul
+                        class="max-w-md max-h-80 overflow-auto divide-y divide-gray-700"
+                    >
+                        <li class="pb-3 sm:pb-4 px-1 mx-1">
+                            <div
+                                class="flex items-center space-x-4 rtl:space-x-reverse"
+                            >
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">
+                                        Neil Sims
+                                    </p>
+                                    <p class="text-sm truncate text-gray-400">
+                                        email@flowbite.com
+                                    </p>
+                                </div>
+                                <div
+                                    class="inline-flex items-center text-base font-semibold"
+                                >
+                                    $320
+                                </div>
+                            </div>
+                        </li>
+                        <li class="py-3 sm:py-4 px-1 mx-1">
+                            <div
+                                class="flex items-center space-x-4 rtl:space-x-reverse"
+                            >
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">
+                                        Neil Sims
+                                    </p>
+                                    <p class="text-sm truncate text-gray-400">
+                                        email@flowbite.com
+                                    </p>
+                                </div>
+                                <div
+                                    class="inline-flex items-center text-base font-semibold"
+                                >
+                                    $320
+                                </div>
+                            </div>
+                        </li>
+                        <li class="py-3 sm:py-4 px-1 mx-1">
+                            <div
+                                class="flex items-center space-x-4 rtl:space-x-reverse"
+                            >
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">
+                                        Neil Sims
+                                    </p>
+                                    <p class="text-sm truncate text-gray-400">
+                                        email@flowbite.com
+                                    </p>
+                                </div>
+                                <div
+                                    class="inline-flex items-center text-base font-semibold"
+                                >
+                                    $320
+                                </div>
+                            </div>
+                        </li>
+                        <li class="py-3 sm:py-4 px-1 mx-1">
+                            <div
+                                class="flex items-center space-x-4 rtl:space-x-reverse"
+                            >
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">
+                                        Neil Sims
+                                    </p>
+                                    <p class="text-sm truncate text-gray-400">
+                                        email@flowbite.com
+                                    </p>
+                                </div>
+                                <div
+                                    class="inline-flex items-center text-base font-semibold"
+                                >
+                                    $320
+                                </div>
+                            </div>
+                        </li>
+                        <li class="pt-3 pb-0 sm:pt-4 px-1 mx-1">
+                            <div
+                                class="flex items-center space-x-4 rtl:space-x-reverse"
+                            >
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">
+                                        Neil Sims
+                                    </p>
+                                    <p class="text-sm truncate text-gray-400">
+                                        email@flowbite.com
+                                    </p>
+                                </div>
+                                <div
+                                    class="inline-flex items-center text-base font-semibold"
+                                >
+                                    $320
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="/assets/js/dashboard.js"></script>
     </body>
 </html>
