@@ -18,14 +18,16 @@ const socket = io();
 
 const createPeer = () => {
     windowState.myPeer = new Peer(windowState.idPeer);
-
-    //waiting for connection opening
-    windowState.myPeer.on("open", (id) => {
-        console.log("joining call:", id);
-        socket.emit("joinCall", id, $("#callId").val(), windowState.userId);
-    });
-
     console.log("MyPEER id:", windowState.myPeer._id);
+
+    return new Promise((resolve, reject) => {
+        //waiting for connection opening
+        windowState.myPeer.on("open", (id) => {
+            console.log("joining call:", id);
+            socket.emit("joinCall", id, $("#callId").val(), windowState.userId);
+            resolve();
+        });
+    });
 };
 
 const getAndSendStream = async () => {
@@ -308,12 +310,12 @@ const showAndSendMessage = () => {
     const msg = $("#chat-msg").val();
 };
 
-$(() => {
+$(async () => {
     console.log("Peer id:", windowState.idPeer);
     console.log("call id:", $("#callId").val());
 
     //socket.emit("joinCall", windowState.idPeer, $("#callId").val());
-    createPeer();
+    await createPeer();
     getAndSendStream();
     $("#btn-show-people").on("click", showpeers);
     $("#btn-show-chat").on("click", showChat);
