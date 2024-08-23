@@ -5,6 +5,17 @@ const CallParticipants = require("../models/callParticipants");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
 
+const getUsernameById = async (id) => {
+    const user = await User.findOne({
+        where: {
+            id: id,
+        },
+    });
+
+    if (!user) return "";
+    else return user.username;
+};
+
 const initDbSchema = async (sequelize) => {
     //testing the connection
     try {
@@ -23,4 +34,4 @@ const initDbSchema = async (sequelize) => {
     }
 };
 
-module.exports = initDbSchema;
+module.exports = { initDbSchema, getUsernameById };

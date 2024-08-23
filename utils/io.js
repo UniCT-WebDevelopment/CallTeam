@@ -1,27 +1,50 @@
+const CallParticipants = require("../models/callParticipants");
 const User = require("../models/user");
+const { Op } = require("sequelize");
+const { getUsernameById } = require("./db");
 
 function handleIoConnection(io) {
     io.on("connection", (socket) => {
         console.log("User connected to io:", socket.id);
         socket.on("joinCall", async (idPeer, callId, userId) => {
             console.log("User joined. Peer:", idPeer);
+
+            //join socket io room
             socket.join(callId);
-            socket.on("disconnect", () => {
-                socket.to(callId).emit("userDisconnected", idPeer);
+
+            //be sure that the client can be called
+            //and then trigger the userjoinedcall event
+            socket.on("readyToBeCalled", (username) => {
+                console.log(`Peer ${idPeer} ready to be called`);
+
+                socket.to(callId).emit("userJoinedCall", idPeer, username);
             });
-            //query the db for getting username
-            try {
-                const user = await User.findOne({
+
+            //add participant to call in db
+
+            //----------------To delete---------------------
+            const isUserInCall = await CallParticipants.findOne({
+                where: {
+                    [Op.and]: [{ UserId: userId }, { CallId: callId }],
+                },
+            });
+
+            if (!isUserInCall)
+                await CallParticipants.create({
+                    UserId: userId,
+                    CallId: callId,
+                });
+            //------------------------------------------------
+
+            socket.on("disconnect", async () => {
+                await CallParticipants.destroy({
                     where: {
-                        id: Number(userId),
+                        [Op.and]: [{ UserId: userId }, { CallId: callId }],
                     },
                 });
-
-                socket.to(callId).emit("userJoinedCall", idPeer, user.username);
-            } catch (error) {
-                console.log("Error on retrieving user from db:", error);
-                socket.to(callId).emit("userJoinedCall", idPeer, "Undefined");
-            }
+                const username = await getUsernameById(userId);
+                socket.to(callId).emit("userDisconnected", idPeer, username);
+            });
         });
     });
 }

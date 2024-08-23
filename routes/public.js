@@ -1,3 +1,4 @@
+const getUserById = require("../controllers/user");
 const { checkIsAdminCall } = require("../middlewares/call");
 const { checkSession, checkUserAuthorized } = require("../middlewares/session");
 
@@ -26,16 +27,23 @@ router.get(
     }
 );
 
-router.get("/call/:callId", checkSession, checkIsAdminCall, (req, res) => {
-    return res.render("call-admin-view", {
-        callId: req.params.callId,
-        userId: req.session.userId,
-    });
-    /* if (req.isAdmin) {
+router.get(
+    "/call/:callId",
+    checkSession,
+    checkIsAdminCall,
+    getUserById,
+    (req, res) => {
+        return res.render("call-admin-view", {
+            callId: req.params.callId,
+            userId: req.user.id,
+            username: req.user.username,
+        });
+        /* if (req.isAdmin) {
         return res.render("call-admin-view", { callId: req.params.callId });
     } else {
         return res.render("call-view");
     } */
-});
+    }
+);
 
 module.exports = router;

@@ -1,9 +1,9 @@
 const fs = require("fs");
 const express = require("express");
 const app = express();
-const http = require("http").Server(app);
+const http = require("http");
 const https = require("https");
-const io = require("socket.io")(http);
+const { Server } = require("socket.io");
 const env = require("dotenv").config();
 const session = require("express-session");
 const path = require("path");
@@ -15,8 +15,16 @@ const options = {
     cert: fs.readFileSync("server.cert"),
 };
 
+//servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(options, app);
+
 //sequelize
 const sequelize = new Sequelize(process.env.DATABASE_URL);
+
+//io
+const io = new Server(httpServer);
+const ioHttps = new Server(httpsServer);
 
 //routers
 const publicRouter = require("./routes/public");
@@ -24,7 +32,7 @@ const authRouter = require("./routes/auth");
 const apiRouter = require("./routes/api");
 
 //utils
-const initDbSchema = require("./utils/db");
+const { initDbSchema } = require("./utils/db");
 const handleIoConnection = require("./utils/io");
 
 //middlewares
@@ -53,11 +61,12 @@ app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 
 handleIoConnection(io);
+handleIoConnection(ioHttps);
 
-/* https.createServer(options, app).listen(process.env.PORT, () => {
-    console.log("server in ascolto sulla porta 3500");
-}); */
+httpsServer.listen(4000, () => {
+    console.log("server in ascolto sulla porta 4000");
+});
 
-http.listen(process.env.PORT, () => {
+httpServer.listen(process.env.PORT, () => {
     console.log(`Server in ascolto sulla porta ${process.env.PORT}`);
 });

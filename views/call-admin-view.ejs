@@ -21,6 +21,7 @@
     >
         <input type="hidden" id="callId" value="<%= callId %>" />
         <input type="hidden" id="userId" value="<%= userId %>" />
+        <input type="hidden" id="username" value="<%= username %>" />
         <div
             id="video-grid-container"
             class="col-start-1 col-span-2 grid grid-cols-1 gap-4 p-4 overflow-hidden"
@@ -172,6 +173,7 @@
             </div>
             <div id="call-settings" class="space-x-1 p-2">
                 <button
+                    id="btn-mic"
                     class="group rounded-full transition-all hover:bg-gray-800 hover:rounded-full p-2"
                 >
                     <svg
@@ -190,6 +192,7 @@
                     </svg>
                 </button>
                 <button
+                    id="btn-videocam"
                     class="group transition-all stroke-slate-50 hover:rounded-full hover:bg-gray-800 hover:fill-black p-2"
                 >
                     <svg
@@ -208,6 +211,7 @@
                     </svg>
                 </button>
                 <button
+                    id="btn-settings"
                     class="group transition-all stroke-slate-50 hover:rounded-full hover:bg-gray-800 hover:fill-black p-2"
                 >
                     <svg
