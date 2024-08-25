@@ -6,6 +6,8 @@ const { getUsernameById } = require("./db");
 function handleIoConnection(io) {
     io.on("connection", (socket) => {
         console.log("User connected to io:", socket.id);
+
+        //join call event -> communicate to other user in call that user joined
         socket.on("joinCall", async (idPeer, callId, userId) => {
             console.log("User joined. Peer:", idPeer);
 
@@ -45,6 +47,11 @@ function handleIoConnection(io) {
                 const username = await getUsernameById(userId);
                 socket.to(callId).emit("userDisconnected", idPeer, username);
             });
+        });
+
+        //handle chat messages
+        socket.on("sendMessage", (callId, username, message) => {
+            socket.to(callId).emit("newChatMessage", username, message);
         });
     });
 }

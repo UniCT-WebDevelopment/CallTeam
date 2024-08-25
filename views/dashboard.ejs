@@ -11,25 +11,34 @@
             class="w-full h-full flex flex-col lg:flex-row items-center justify-evenly"
         >
             <div id="create-call-container" class="p-3 m-2">
-                <div class="font-extrabold text-2xl my-4 mx-2 p-2">
+                <div
+                    class="text-center md:text-left font-extrabold text-2xl my-4 mx-2 p-2"
+                >
                     Chiama chi vuoi
                 </div>
-                <div id="action-call-container">
+                <div
+                    id="action-call-container"
+                    class="flex flex-col items-center space-y-5 md:space-y-0 md:flex-row"
+                >
                     <button
                         id="btn-new-call"
                         class="bg-green-900 text-black font-medium hover:bg-green-800 rounded-lg p-2 mx-4"
                     >
-                        Nuova Riunione</button
-                    ><input
-                        type="text"
-                        class="bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 p-2 mx-1 placeholder:text-gray-400"
-                        placeholder="Inserisci un codice"
-                    /><button
-                        id="btn-participate-call"
-                        class="bg-green-900 text-black hover:bg-green-800 rounded-lg p-2 mx-1 font-medium"
-                    >
-                        Partecipa
+                        Nuova Riunione
                     </button>
+                    <div id="existing-call-group">
+                        <input
+                            id="callId"
+                            type="text"
+                            class="bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 p-2 mx-1 placeholder:text-gray-400"
+                            placeholder="Inserisci un codice"
+                        /><button
+                            id="btn-participate-call"
+                            class="bg-green-900 text-black hover:bg-green-800 rounded-lg p-2 mx-1 font-medium"
+                        >
+                            Partecipa
+                        </button>
+                    </div>
                 </div>
             </div>
 

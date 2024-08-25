@@ -22,6 +22,7 @@
         <input type="hidden" id="callId" value="<%= callId %>" />
         <input type="hidden" id="userId" value="<%= userId %>" />
         <input type="hidden" id="username" value="<%= username %>" />
+
         <div
             id="video-grid-container"
             class="col-start-1 col-span-2 grid grid-cols-1 gap-4 p-4 overflow-hidden"
@@ -77,11 +78,11 @@
         </div>
         <div
             id="utility-sidebar"
-            class="h-0 transition-all translate-x-80 relative col-start-2 col-span-1"
+            class="h-0 p-3 bg-gray-900 rounded-lg shadow-xl transition-all translate-x-80 relative col-start-2 col-span-1"
         >
             <!--CHAT-->
             <div id="chat-container" class="hidden">
-                <div class="flex justify-between items-center p-3 mb-2">
+                <div class="flex justify-between items-center p-2 mb-2 z-20">
                     <span class="font-bold text-xl">Chat</span>
                     <button
                         id=""
@@ -104,7 +105,35 @@
                     </button>
                 </div>
                 <hr />
-                <div id="chat-messages-container" class=""></div>
+                <div
+                    id="chat-messages-container"
+                    class="flex flex-col overflow-auto z-0"
+                    style="
+                        position: absolute;
+                        bottom: 50px;
+                        top: 80px;
+                        right: 10px;
+                        left: 10px;
+                    "
+                >
+                    <!-- <div class="p-2 my-1 flex flex-col">
+                        <div class="font-bold text-green-800 mb-1">
+                            Pippo <span class="text-xs font-medium">10:50</span>
+                        </div>
+                        <div class="text-wrap text-sm">
+                            Messaggio di pippolonehweofhwioeh foiwehfoiwehfoiw
+                            ehf
+                        </div>
+                    </div>
+                    <div class="p-2 my-1 flex flex-col">
+                        <div class="font-bold text-green-800 mb-1">
+                            Turi <span class="text-xs font-medium">10:50</span>
+                        </div>
+                        <div class="text-wrap text-sm">
+                            Ma che spacchio stai dicendo coglione di merda?
+                        </div>
+                    </div> -->
+                </div>
                 <div
                     class="absolute bottom-0 flex justify-center font-normal text-sm"
                 >
@@ -116,7 +145,7 @@
                     />
                     <button
                         id="btn-send-chat-message"
-                        class="group rounded-full transition-all hover:bg-gray-800 hover:rounded-full p-2"
+                        class="group rounded-full transition-all hover:bg-gray-800 hover:rounded-full p-2 mx-2 mb-2"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -137,8 +166,8 @@
             </div>
 
             <!--PEOPLE-->
-            <div id="people-container" class="hidden">
-                <div class="flex justify-between items-center p-3 mb-2">
+            <div id="people-container" class="hidden max-h-full">
+                <div class="flex justify-between items-center p-2 mb-2 z-20">
                     <span class="font-bold text-xl">Persone</span>
                     <button
                         id=""
@@ -161,15 +190,28 @@
                     </button>
                 </div>
                 <hr />
-                <div id="people-list-container" class=""></div>
+                <div
+                    id="people-list-container"
+                    class="relative flex flex-col overflow-auto z-0"
+                    style="
+                        position: absolute;
+                        bottom: 50px;
+                        top: 80px;
+                        right: 10px;
+                        left: 10px;
+                    "
+                ></div>
             </div>
         </div>
         <div
             id="footer"
             class="col-span-2 mt-5 md:mt-2 2xl:mt-0 p-2 flex justify-between flex-row"
         >
-            <div id="call-info" class="text-center font-medium p-2">
-                09:15 | cicciolina
+            <div
+                id="call-info"
+                class="hidden sm:block text-center font-medium p-2"
+            >
+                09:15 | <%= callId %>
             </div>
             <div id="call-settings" class="space-x-1 p-2">
                 <button
@@ -212,7 +254,7 @@
                 </button>
                 <button
                     id="btn-settings"
-                    class="group transition-all stroke-slate-50 hover:rounded-full hover:bg-gray-800 hover:fill-black p-2"
+                    class="group relative transition-all stroke-slate-50 hover:rounded-full hover:bg-gray-800 hover:fill-black p-2"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -234,15 +276,17 @@
                         />
                     </svg>
                 </button>
-                <button class="transition-all hover:bg-red-600 rounded-xl p-2">
+                <button
+                    id="btn-leave-call"
+                    class="transition-all hover:bg-red-600 rounded-xl p-2"
+                >
                     <span class="material-symbols-outlined"> call_end </span>
                 </button>
             </div>
-            <!-- drawer init and show -->
-            <div id="utilites-btns">
+            <div id="utilites-btns" class="p-2">
                 <button
                     id="btn-show-people"
-                    class="transition-all stroke-slate-50 hover:rounded-full hover:bg-gray-800 hover:fill-black p-2"
+                    class="transition-all hover:rounded-full hover:bg-gray-800 p-2"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -262,7 +306,7 @@
 
                 <button
                     id="btn-show-chat"
-                    class="transition-all stroke-slate-50 hover:rounded-full hover:bg-gray-800 hover:fill-black p-2"
+                    class="transition-all hover:rounded-full hover:bg-gray-800 p-2"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -279,6 +323,185 @@
                         />
                     </svg>
                 </button>
+            </div>
+        </div>
+
+        <!--Dropdown settings-->
+        <div
+            id="dropdown-settings"
+            class="hidden transition relative z-10 opacity-0"
+            aria-labelledby="modal-title"
+            role="dialog"
+            aria-modal="true"
+        >
+            <!--
+          Background backdrop, show/hide based on modal state.
+      
+          Entering: "ease-out duration-300"
+            From: "opacity-0"
+            To: "opacity-100"
+          Leaving: "ease-in duration-200"
+            From: "opacity-100"
+            To: "opacity-0"
+        -->
+            <div
+                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                aria-hidden="true"
+            ></div>
+
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div
+                    id="modal-panel"
+                    class="transition flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                    <!--
+              Modal panel, show/hide based on modal state.
+      
+              Entering: "ease-out duration-300"
+                From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                To: "opacity-100 translate-y-0 sm:scale-100"
+              Leaving: "ease-in duration-200"
+                From: "opacity-100 translate-y-0 sm:scale-100"
+                To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            -->
+                    <div
+                        class="relative transform overflow-hidden rounded-lg bg-gray-700 text-left text-white shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+                    >
+                        <div class="px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                            <div class="">
+                                <!-- <div
+                                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+                                >
+                                           <svg
+                                        class="h-6 w-6 text-red-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                                        />
+                                    </svg> 
+                                </div> -->
+                                <button
+                                    class="absolute top-5 right-5 p-2 hover:bg-gray-600 hover:opacity-50 hover:rounded-full"
+                                    id="btn-close-modal-settings"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="size-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M6 18 18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                                <div
+                                    class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left"
+                                >
+                                    <h3
+                                        class="text-base font-semibold leading-6"
+                                        id="modal-title"
+                                    >
+                                        Impostazioni
+                                    </h3>
+                                    <div class="mt-4">
+                                        <!-- <p class="text-sm text-gray-200">
+                                            Videocamera
+                                        </p>
+                                        <select
+                                            id=""
+                                            class="w-full rounded-lg bg-gray-700"
+                                        >
+                                            <option value="fwef">Fef</option>
+                                            <option value="fwef">Fef</option>
+                                        </select> -->
+                                        <label
+                                            for="videocamera-input"
+                                            class="block mb-2 text-sm font-medium text-white"
+                                            >Videocamera</label
+                                        >
+                                        <select
+                                            id="videocamera-input"
+                                            class="border text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-green-500 focus:border-green-500"
+                                        >
+                                            <option selected>Default</option>
+                                            <option value="US">
+                                                United States
+                                            </option>
+                                            <option value="CA">Canada</option>
+                                            <option value="FR">France</option>
+                                            <option value="DE">Germany</option>
+                                        </select>
+                                    </div>
+                                    <div class="mt-2">
+                                        <label
+                                            for="videocamera-input"
+                                            class="block mb-2 text-sm font-medium text-white"
+                                            >Microfono</label
+                                        >
+                                        <select
+                                            id="videocamera-input"
+                                            class="border text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-green-500 focus:border-green-500"
+                                        >
+                                            <option selected>Default</option>
+                                            <option value="US">
+                                                United States
+                                            </option>
+                                            <option value="CA">Canada</option>
+                                            <option value="FR">France</option>
+                                            <option value="DE">Germany</option>
+                                        </select>
+                                    </div>
+                                    <div class="mt-2 mb-2">
+                                        <label
+                                            for="videocamera-input"
+                                            class="block mb-2 text-sm font-medium text-white"
+                                            >Altoparlanti</label
+                                        >
+                                        <select
+                                            id="videocamera-input"
+                                            class="border text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-green-500 focus:border-green-500"
+                                        >
+                                            <option selected>Default</option>
+                                            <option value="US">
+                                                United States
+                                            </option>
+                                            <option value="CA">Canada</option>
+                                            <option value="FR">France</option>
+                                            <option value="DE">Germany</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Leaving call page-->
+        <div id="leave-call-container" class="hidden">
+            <div class="text-3xl font-bold text-center mt-16">
+                Hai lasciato la riunione
+            </div>
+            <div class="my-10 text-sm font-semibold text-center">
+                Torna alla
+                <a
+                    class="text-green-900 hover:text-green-800"
+                    href="/dashboard/<%= userId %>"
+                    >home</a
+                >
             </div>
         </div>
 
