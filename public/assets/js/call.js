@@ -1,8 +1,8 @@
 const windowState = {
     chatMessages: [],
-    calls: [],
+    calls: {},
     users: [],
-    streams: [],
+    streams: {},
     chatVisible: false,
     peopleVisible: false,
     callSettings: {
@@ -111,20 +111,6 @@ const utilities = {
         }
         return true;
     },
-    /* changeTrack: (track, value) => {
-    const constraints = track.getConstraints();
-    console.log("constraints:", constraints);
-    constraints.deviceId = { exact: value };
-    track.applyConstraints(constraints);
-
-    windowState.calls.forEach((call) => {
-      call.peerConnection.getSenders().forEach((sender) => {
-        if (sender.track.kind == track.kind) {
-          sender.replaceTrack(track);
-        }
-      });
-    });
-  }, */
     changeStream: async (username, change, oldStream, newConstraints) => {
         try {
             const newStream = await navigator.mediaDevices.getUserMedia(
@@ -138,22 +124,27 @@ const utilities = {
             //change src of my video
             document.getElementById(`${username}-video`).srcObject = newStream;
             windowState.streams[username] = newStream;
+            console.log("changed stream", newStream);
 
             const trackToChange =
                 change == "video"
                     ? newStream.getVideoTracks()[0]
                     : newStream.getAudioTracks()[0];
-            windowState.calls.forEach((call) => {
-                console.log("peerConnection", call.peerConnection);
-                console.log("senders", call.peerConnection.getSenders());
-                call.peerConnection.getSenders().forEach((sender) => {
-                    console.log("sender:", sender);
-                    console.log("track", sender.track);
-                    if (sender.track.kind == trackToChange.kind) {
-                        sender.replaceTrack(trackToChange);
-                    }
-                });
-            });
+            console.log("changing senders track", windowState.calls);
+            //console.log("Entries", Object.entries(windowState.calls));
+            for (const call in windowState.calls) {
+                /*  console.log("peerConnection", call.peerConnection);
+                console.log("senders", call.peerConnection.getSenders()); */
+                windowState.calls[call].peerConnection
+                    .getSenders()
+                    .forEach((sender) => {
+                        console.log("sender:", sender);
+                        console.log("track", sender.track);
+                        if (sender.track.kind == trackToChange.kind) {
+                            sender.replaceTrack(trackToChange);
+                        }
+                    });
+            }
         } catch (error) {
             console.log("Error on changing settings:", error);
         }
@@ -223,12 +214,14 @@ const utilities = {
 
         //add event handlers for changing settings
         videoSelect.addEventListener("change", (event) => {
-            const audioDeviceId = myStream
+            const audioConstraints = myStream
                 .getAudioTracks()[0]
-                .getConstraints().deviceId;
+                .getConstraints();
             const constraints = {
                 video: { deviceId: { exact: event.target.value } },
-                audio: audioDeviceId ? audioDeviceId : undefined,
+                audio: audioConstraints
+                    ? audioConstraints
+                    : { deviceId: undefined },
             };
             this.changeStream(
                 windowState.username,
@@ -238,11 +231,17 @@ const utilities = {
             );
         });
         micSelect.addEventListener("change", (event) => {
-            const videoDeviceId = myStream
+            const videoConstraints = myStream
                 .getVideoTracks()[0]
-                .getConstraints().deviceId;
+                .getConstraints();
+            console.log(
+                "Constraints of old video",
+                myStream.getVideoTracks()[0].getConstraints()
+            );
             const constraints = {
-                video: videoDeviceId ? videoDeviceId : undefined,
+                video: videoConstraints
+                    ? videoConstraints
+                    : { deviceId: undefined },
                 audio: { deviceId: { exact: event.target.value } },
             };
             this.changeStream(
@@ -568,6 +567,9 @@ const updateVideoGrid = (stream, username) => {
 const removePeer = (username) => {
     console.log("Removing peer. Username:", username);
     console.log("users", windowState.users);
+    //delete from list of people
+    document.querySelector(`#people-list-container #${username}`).remove();
+    //delete video
     document.getElementById(`${username}-video`).parentElement.remove();
 
     if (windowState.users.length < 2) {
