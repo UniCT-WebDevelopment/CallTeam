@@ -103,6 +103,66 @@ const utilities = {
                         />
                     </svg>`;
     },
+    checkOptionDoesNotExists: (select, value) => {
+        for (const option of select.children) {
+            if (option.value == value) {
+                return false;
+            }
+        }
+        return true;
+    },
+    updateDeviceSettings: function (devices) {
+        const videoSelect = document.getElementById("videocamera-input");
+        const micSelect = document.getElementById("mic-input");
+        const audioSelect = document.getElementById("audio-output");
+        const myVideo = document.getElementById(
+            `${windowState.username}-video`
+        );
+
+        devices.forEach((device) => {
+            let option = document.createElement("option");
+            switch (device.kind) {
+                case "videoinput":
+                    if (
+                        this.checkOptionDoesNotExists(
+                            videoSelect,
+                            device.deviceId
+                        )
+                    ) {
+                        option.innerHTML = device.label;
+                        option.value = device.deviceId;
+                        videoSelect.appendChild(option);
+                    }
+                    break;
+                case "audioinput":
+                    if (
+                        this.checkOptionDoesNotExists(
+                            micSelect,
+                            device.deviceId
+                        )
+                    ) {
+                        option.innerHTML = device.label;
+                        option.value = device.deviceId;
+                        micSelect.appendChild(option);
+                    }
+                    break;
+                case "audiooutput":
+                    if (
+                        this.checkOptionDoesNotExists(
+                            audioSelect,
+                            device.deviceId
+                        )
+                    ) {
+                        option.innerHTML = device.label;
+                        option.value = device.deviceId;
+                        audioSelect.appendChild(option);
+                    }
+                    break;
+            }
+        });
+
+        //add event handlers for changing settings
+    },
 };
 
 const socket = io();
@@ -130,8 +190,8 @@ const listenToSocketEvents = () => {
 const getAndSendStream = async () => {
     try {
         stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
+            video: { deviceId: undefined },
+            audio: { deviceId: undefined },
         });
         console.log("tracks:", stream.getTracks());
         console.log("Audio Tracks:", stream.getAudioTracks());
@@ -141,13 +201,14 @@ const getAndSendStream = async () => {
         updateUsers(windowState.username);
         //windowState.users.push(windowState.username);
         windowState.streams[windowState.username] = stream;
-        updateVideoGrid(stream, "Tu");
+        updateVideoGrid(stream, windowState.username);
 
         //waiting for other call
         windowState.myPeer.on("call", (call) => {
             console.log("User calling");
             console.log("Metadata:", call.metadata);
             call.answer(stream);
+            console.log("Peer Connection:", call.peerConnection);
             call.on(
                 "stream",
                 (remoteStream) => {
@@ -194,7 +255,10 @@ const getAndSendStream = async () => {
                 },
             });
             console.log("user called");
-            console.log("Peer Connection", call.peerConnection);
+            console.log(
+                "Peer Connection Senders",
+                call.peerConnection.getSenders()
+            );
             call.on(
                 "stream",
                 (remoteStream) => {
@@ -256,6 +320,8 @@ const getDevices = async () => {
     try {
         devices = await navigator.mediaDevices.enumerateDevices();
         console.log("devices", devices);
+
+        utilities.updateDeviceSettings(devices);
     } catch (error) {
         console.log("Error on getting devices", error);
     }
@@ -416,12 +482,12 @@ const addVideo = (stream, username) => {
                 <p
                     class="absolute bottom-0 left-0 bg-gray-800 z-30 text-xs p-1 rounded"
                 >
-                    ${username}
+                    ${username == windowState.username ? "Tu" : username}
                 </p>`;
     videoGrid.appendChild(videoContainer);
 
     document.getElementById(`${username}-video`).srcObject = stream;
-    if (username === "Tu")
+    if (username === windowState.username)
         document.getElementById(`${username}-video`).muted = true;
 };
 
@@ -486,6 +552,8 @@ const showpeers = () => {
 
 const toggleSettings = () => {
     if (!windowState.callSettings.areSettingsVisible) {
+        getDevices();
+
         $("#dropdown-settings")
             .removeClass("hidden opacity-0")
             .addClass("opacity-100 ease-out duration-300");
@@ -521,7 +589,6 @@ $(async () => {
     await createPeer();
     listenToSocketEvents();
     getAndSendStream();
-    getDevices();
     $("#btn-show-people").on("click", showpeers);
     $("#btn-show-chat").on("click", showChat);
     $(".btn-close-sidebar").on("click", closeSidebar);
