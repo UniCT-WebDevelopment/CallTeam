@@ -111,6 +111,65 @@ const utilities = {
         }
         return true;
     },
+    /* changeTrack: (track, value) => {
+    const constraints = track.getConstraints();
+    console.log("constraints:", constraints);
+    constraints.deviceId = { exact: value };
+    track.applyConstraints(constraints);
+
+    windowState.calls.forEach((call) => {
+      call.peerConnection.getSenders().forEach((sender) => {
+        if (sender.track.kind == track.kind) {
+          sender.replaceTrack(track);
+        }
+      });
+    });
+  }, */
+    changeStream: async (username, change, oldStream, newConstraints) => {
+        try {
+            const newStream = await navigator.mediaDevices.getUserMedia(
+                newConstraints
+            );
+
+            /* oldStream.getTracks().forEach((track) => {
+                track.stop();
+            }); */
+
+            //change src of my video
+            document.getElementById(`${username}-video`).srcObject = newStream;
+            windowState.streams[username] = newStream;
+
+            const trackToChange =
+                change == "video"
+                    ? newStream.getVideoTracks()[0]
+                    : newStream.getAudioTracks()[0];
+            windowState.calls.forEach((call) => {
+                console.log("peerConnection", call.peerConnection);
+                console.log("senders", call.peerConnection.getSenders());
+                call.peerConnection.getSenders().forEach((sender) => {
+                    console.log("sender:", sender);
+                    console.log("track", sender.track);
+                    if (sender.track.kind == trackToChange.kind) {
+                        sender.replaceTrack(trackToChange);
+                    }
+                });
+            });
+        } catch (error) {
+            console.log("Error on changing settings:", error);
+        }
+    },
+    changeVideoSinkId: async (video, sinkId, selector) => {
+        if (typeof video.sinkId != "undefined") {
+            try {
+                await video.setSinkId(sinkId);
+            } catch (error) {
+                console.log("Error on setting sinkId:", error);
+                selector.selectedIndex = 0;
+            }
+        } else {
+            console.warn("Browser does not support output device selection.");
+        }
+    },
     updateDeviceSettings: function (devices) {
         const videoSelect = document.getElementById("videocamera-input");
         const micSelect = document.getElementById("mic-input");
@@ -118,6 +177,7 @@ const utilities = {
         const myVideo = document.getElementById(
             `${windowState.username}-video`
         );
+        const myStream = myVideo.srcObject;
 
         devices.forEach((device) => {
             let option = document.createElement("option");
@@ -162,6 +222,48 @@ const utilities = {
         });
 
         //add event handlers for changing settings
+        videoSelect.addEventListener("change", (event) => {
+            const audioDeviceId = myStream
+                .getAudioTracks()[0]
+                .getConstraints().deviceId;
+            const constraints = {
+                video: { deviceId: { exact: event.target.value } },
+                audio: audioDeviceId ? audioDeviceId : undefined,
+            };
+            this.changeStream(
+                windowState.username,
+                "video",
+                myStream,
+                constraints
+            );
+        });
+        micSelect.addEventListener("change", (event) => {
+            const videoDeviceId = myStream
+                .getVideoTracks()[0]
+                .getConstraints().deviceId;
+            const constraints = {
+                video: videoDeviceId ? videoDeviceId : undefined,
+                audio: { deviceId: { exact: event.target.value } },
+            };
+            this.changeStream(
+                windowState.username,
+                "audio",
+                myStream,
+                constraints
+            );
+        });
+        audioSelect.addEventListener("change", (event) => {
+            windowState.users.forEach((user) => {
+                if (user != windowState.username) {
+                    const video = document.getElementById(`${user}-video`);
+                    this.changeVideoSinkId(
+                        video,
+                        event.target.value,
+                        audioSelect
+                    );
+                }
+            });
+        });
     },
 };
 
@@ -207,13 +309,14 @@ const getAndSendStream = async () => {
         windowState.myPeer.on("call", (call) => {
             console.log("User calling");
             console.log("Metadata:", call.metadata);
-            call.answer(stream);
+            call.answer(windowState.streams[windowState.username]);
             console.log("Peer Connection:", call.peerConnection);
             call.on(
                 "stream",
                 (remoteStream) => {
                     if (!windowState.calls[call.metadata.idPeerCaller]) {
                         windowState.calls[call.metadata.idPeerCaller] = call;
+                        console.log("Calls after answer", windowState.calls);
                         if (
                             !windowState.users.find((user) => {
                                 return user == call.metadata.usernameCaller;
@@ -246,14 +349,18 @@ const getAndSendStream = async () => {
         socket.on("userJoinedCall", (idPeer, username) => {
             console.log("user joined. Peer id:", idPeer);
             //calling the other peer
-            let call = windowState.myPeer.call(idPeer, stream, {
-                metadata: {
-                    usernameCaller: windowState.username,
-                    usernameReceiver: username,
-                    idPeerCaller: windowState.idPeer,
-                    idPeerReceiver: idPeer,
-                },
-            });
+            let call = windowState.myPeer.call(
+                idPeer,
+                windowState.streams[windowState.username],
+                {
+                    metadata: {
+                        usernameCaller: windowState.username,
+                        usernameReceiver: username,
+                        idPeerCaller: windowState.idPeer,
+                        idPeerReceiver: idPeer,
+                    },
+                }
+            );
             console.log("user called");
             console.log(
                 "Peer Connection Senders",
@@ -265,6 +372,7 @@ const getAndSendStream = async () => {
                     console.log("Remote stream arrived. Stream:", remoteStream);
                     if (!windowState.calls[call.metadata.idPeerReceiver]) {
                         windowState.calls[call.metadata.idPeerReceiver] = call;
+                        console.log("Calls updated", windowState.calls);
                         if (
                             !windowState.users.find((user) => {
                                 return user == call.metadata.usernameReceiver;
