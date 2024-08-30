@@ -2,6 +2,7 @@ const CallParticipants = require("../models/callParticipants");
 const User = require("../models/user");
 const { Op } = require("sequelize");
 const { getUsernameById } = require("./db");
+const Call = require("../models/call");
 
 function handleIoConnection(io) {
     io.on("connection", (socket) => {
@@ -10,6 +11,8 @@ function handleIoConnection(io) {
         //join call event -> communicate to other user in call that user joined
         socket.on("joinCall", async (idPeer, callId, userId) => {
             console.log("User joined. Peer:", idPeer);
+            //get call from db
+            const call = await Call.findOne({ where: { id: callId } });
 
             //join socket io room
             socket.join(callId);
@@ -23,27 +26,29 @@ function handleIoConnection(io) {
             });
 
             //add participant to call in db
+            //update participants
+            call.participants++;
+            await call.save();
 
             //----------------To delete---------------------
-            const isUserInCall = await CallParticipants.findOne({
+            let userInCall = await CallParticipants.findOne({
                 where: {
                     [Op.and]: [{ UserId: userId }, { CallId: callId }],
                 },
             });
 
-            if (!isUserInCall)
-                await CallParticipants.create({
+            if (!userInCall)
+                userInCall = await CallParticipants.create({
                     UserId: userId,
                     CallId: callId,
+                    isInCall: true,
                 });
             //------------------------------------------------
 
             socket.on("disconnect", async () => {
-                await CallParticipants.destroy({
-                    where: {
-                        [Op.and]: [{ UserId: userId }, { CallId: callId }],
-                    },
-                });
+                userInCall.isInCall = false;
+                await userInCall.save();
+
                 const username = await getUsernameById(userId);
                 socket.to(callId).emit("userDisconnected", idPeer, username);
             });

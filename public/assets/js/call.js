@@ -39,10 +39,10 @@ const utilities = {
     updateUserUi: (username) => {
         const usersContainer = document.getElementById("people-list-container");
         const user = document.createElement("div");
-        user.className = "p-2 my-1 flex";
+        user.className = "p-1 my-1 flex";
         user.setAttribute("id", username);
         user.innerHTML = `<div
-                                class="w-8 h-8 rounded-full bg-green-800 text-black font-medium text-xl text-center pt-0.5 mx-2"
+                                class="w-8 h-8 rounded-full bg-green-800 font-medium text-xl text-center pt-0.5 mx-2"
                             >
                                 ${username.charAt(0).toUpperCase()}
                             </div>
@@ -294,6 +294,7 @@ const getAndSendStream = async () => {
             video: { deviceId: undefined },
             audio: { deviceId: undefined },
         });
+        console.log("Got stream");
         console.log("tracks:", stream.getTracks());
         console.log("Audio Tracks:", stream.getAudioTracks());
         console.log("Video Tracks:", stream.getVideoTracks());
@@ -420,6 +421,7 @@ const getAndSendStream = async () => {
         });
     } catch (error) {
         console.log("Error on getting local stream:", error);
+        //window.location.assign(`/error/notAllowedSettings`);
     }
 };
 
@@ -689,7 +691,7 @@ const closeSidebar = () => {
     utilities.showDefaultPeopleButton();
 
     $("#video-grid-container").removeClass("col-span-1").addClass("col-span-2");
-    $("#utility-sidebar").addClass("h-0 translate-x-80");
+    $("#utility-sidebar").addClass("hidden h-0 translate-x-80");
 };
 
 $(async () => {

@@ -88,4 +88,14 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+const logoutUser = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            res.status(400).json({ error: "Unable to logout" });
+        } else {
+            res.redirect("/signup");
+        }
+    });
+};
+
+module.exports = { registerUser, loginUser, logoutUser };

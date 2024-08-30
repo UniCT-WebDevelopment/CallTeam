@@ -1,6 +1,6 @@
 const User = require("../models/user");
 
-const getUserById = async (req, res, next) => {
+const addUserToReq = async (req, res, next) => {
     const user = await User.findOne({
         where: {
             id: req.session.userId,
@@ -15,4 +15,4 @@ const getUserById = async (req, res, next) => {
     next();
 };
 
-module.exports = getUserById;
+module.exports = addUserToReq;

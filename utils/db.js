@@ -2,6 +2,7 @@ const { Sequelize } = require("sequelize");
 const User = require("../models/user");
 const Call = require("../models/call");
 const CallParticipants = require("../models/callParticipants");
+const Friends = require("../models/friends");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
 
@@ -26,6 +27,7 @@ const initDbSchema = async (sequelize) => {
         await User.sync();
         await Call.sync();
         await CallParticipants.sync();
+        await Friends.sync();
 
         console.log("Models synced to DB");
     } catch (error) {

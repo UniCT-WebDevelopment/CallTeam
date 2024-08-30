@@ -20,6 +20,9 @@ CallParticipants.init(
                 key: "id",
             },
         },
+        isInCall: {
+            type: DataTypes.BOOLEAN,
+        },
     },
     {
         sequelize: new Sequelize(process.env.DATABASE_URL),

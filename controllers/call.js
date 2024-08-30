@@ -35,4 +35,19 @@ const getCallParticipants = async (req, res) => {
     return res.status(200).json({ users: usersInCall });
 };
 
-module.exports = { createNewCall, getCallParticipants };
+const getCall = async (req, res) => {
+    const callId = req.query.callId;
+
+    if (!callId) {
+        return res.status(400).json({ error: "Invalid Call ID" });
+    }
+
+    const checkCallExists = await Call.findOne({ where: { id: callId } });
+    if (!checkCallExists) {
+        return res.status(400).json({ error: "Invalid Call ID" });
+    }
+
+    return res.sendStatus(200);
+};
+
+module.exports = { createNewCall, getCallParticipants, getCall };

@@ -1,5 +1,8 @@
 $(() => {
     $("#btn-submit-signup").on("click", async () => {
+        const previousErrors = document.querySelectorAll("#error");
+        if (previousErrors) previousErrors.forEach((error) => error.remove());
+
         const data = {
             username: $("#signup-form #username").val(),
             password: $("#signup-form #password").val(),
@@ -24,6 +27,7 @@ $(() => {
                         $("<div></div>")
                             .addClass("my-2 text-red-600")
                             .text(error.msg)
+                            .attr("id", "error")
                     );
                 });
                 console.log("Errors", json.errors);
@@ -38,6 +42,7 @@ $(() => {
                         $("<div></div>")
                             .addClass("my-2 text-red-600")
                             .text(json.msg)
+                            .attr("id", "error")
                     );
                 });
             }

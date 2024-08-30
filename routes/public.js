@@ -1,5 +1,9 @@
-const getUserById = require("../controllers/user");
-const { checkIsAdminCall } = require("../middlewares/call");
+const addUserToReq = require("../controllers/user");
+const {
+    checkIsAdminCall,
+    checkUserAlreadyInCall,
+    checkCallExists,
+} = require("../middlewares/call");
 const { checkSession, checkUserAuthorized } = require("../middlewares/session");
 
 const router = require("express").Router();
@@ -31,7 +35,9 @@ router.get(
     "/call/:callId",
     checkSession,
     checkIsAdminCall,
-    getUserById,
+    addUserToReq,
+    checkCallExists,
+    checkUserAlreadyInCall,
     (req, res) => {
         return res.render("call-admin-view", {
             callId: req.params.callId,

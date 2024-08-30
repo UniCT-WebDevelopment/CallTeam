@@ -30,6 +30,7 @@ const ioHttps = new Server(httpsServer);
 const publicRouter = require("./routes/public");
 const authRouter = require("./routes/auth");
 const apiRouter = require("./routes/api");
+const errorRouter = require("./routes/error");
 
 //utils
 const { initDbSchema } = require("./utils/db");
@@ -59,6 +60,7 @@ initDbSchema(sequelize);
 app.use(publicRouter);
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
+app.use("/error", errorRouter);
 
 handleIoConnection(io);
 handleIoConnection(ioHttps);

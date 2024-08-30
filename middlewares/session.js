@@ -7,7 +7,7 @@ const checkSession = (req, res, next) => {
 
 const checkUserAuthorized = (req, res, next) => {
     if (req.session.userId != req.params.userId) {
-        return res.redirect("/unauthorized");
+        return res.redirect("/error/unauthorized");
     }
     next();
 };
