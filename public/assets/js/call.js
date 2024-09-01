@@ -9,6 +9,7 @@ const windowState = {
         isMicActive: true,
         isVideoActive: true,
         areSettingsVisible: false,
+        isInviteWindowVisible: false,
     },
     userId: $("#userId").val(),
     callId: $("#callId").val(),
@@ -482,6 +483,25 @@ const leaveCall = () => {
     $("#leave-call-container").removeClass("hidden");
 };
 
+const sendInvitation = () => {
+    const inputUsername = document.getElementById("username-to-search");
+
+    if (!inputUsername.value) {
+        const container = inputUsername.parentElement;
+        const error = document.createElement("div");
+        error.className = "text-red text-sm";
+        container.appendChild(error);
+    } else {
+        socket.emit(
+            "sendInvitation",
+            windowState.username,
+            inputUsername.value,
+            windowState.callId
+        );
+    }
+};
+
+// UI FUNCTIONS
 const toggleMic = (audioTrack) => {
     const micButton = document.getElementById("btn-mic");
     if (windowState.callSettings.isMicActive) {
@@ -685,6 +705,16 @@ const toggleSettings = () => {
     }
 };
 
+const toggleInviteWindow = () => {
+    if (windowState.callSettings.isInviteWindowVisible) {
+        $("#user-invite-window").addClass("hidden");
+        windowState.callSettings.isInviteWindowVisible = false;
+    } else {
+        $("#user-invite-window").removeClass("hidden");
+        windowState.callSettings.isInviteWindowVisible = true;
+    }
+};
+
 const closeSidebar = () => {
     console.log("closing");
     utilities.showDefaultChatButton();
@@ -707,4 +737,7 @@ $(async () => {
     $("#btn-leave-call").on("click", leaveCall);
     $("#btn-settings").on("click", toggleSettings);
     $("#btn-close-modal-settings").on("click", toggleSettings);
+    $("#btn-open-invite-window").on("click", toggleInviteWindow);
+    $("#btn-close-modal-invite").on("click", toggleInviteWindow);
+    $("#btn-send-username-invitation").on("click", sendInvitation);
 });

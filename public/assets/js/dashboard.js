@@ -1,8 +1,11 @@
+let notificationsVisible = false;
+
 const addErrorFeedback = (errorMsg) => {
-    const container = document.getElementById("existing-call-group");
+    //const container = document.getElementById("existing-call-group");
+    const container = document.getElementById("btn-participate-call");
     const error = document.createElement("div");
     error.setAttribute("id", "error");
-    error.className = "my-2 text-red-600";
+    error.className = "absolute top-10 -left-60 my-2 text-red-600";
     error.innerHTML = errorMsg;
     container.appendChild(error);
 
@@ -44,6 +47,16 @@ const getExistingCall = async () => {
     }
 };
 
+const toggleNotifications = () => {
+    if (notificationsVisible) {
+        $("#notify-container").addClass("hidden");
+        notificationsVisible = false;
+    } else {
+        $("#notify-container").removeClass("hidden");
+        notificationsVisible = true;
+    }
+};
+
 const handleLogout = async () => {
     const response = await fetch("/auth/logout", {
         method: "POST",
@@ -73,5 +86,9 @@ const handleLogout = async () => {
 $(() => {
     $("#btn-new-call").on("click", getNewCall);
     $("#btn-participate-call").on("click", getExistingCall);
+    $("#notify-button").on("click", toggleNotifications);
+    $("#accetta").on("click", () => {
+        console.log("Accettato");
+    });
     $("#logout-button").on("click", handleLogout);
 });

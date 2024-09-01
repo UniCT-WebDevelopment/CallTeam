@@ -27,7 +27,6 @@ const initDbSchema = async (sequelize) => {
         await User.sync();
         await Call.sync();
         await CallParticipants.sync();
-        await Friends.sync();
 
         console.log("Models synced to DB");
     } catch (error) {

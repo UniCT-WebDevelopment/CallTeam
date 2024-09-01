@@ -3,10 +3,15 @@ const User = require("../models/user");
 const { Op } = require("sequelize");
 const { getUsernameById } = require("./db");
 const Call = require("../models/call");
+const Request = require("../models/request");
 
 function handleIoConnection(io) {
     io.on("connection", (socket) => {
         console.log("User connected to io:", socket.id);
+
+        socket.on("joinNotifyRoom", (username) =>
+            socket.join(`notify-${username}`)
+        );
 
         //join call event -> communicate to other user in call that user joined
         socket.on("joinCall", async (idPeer, callId, userId) => {
@@ -58,6 +63,38 @@ function handleIoConnection(io) {
         socket.on("sendMessage", (callId, username, message) => {
             socket.to(callId).emit("newChatMessage", username, message);
         });
+
+        socket.on(
+            "sendInvitation",
+            async (usernameSender, usernameReceiver, callId) => {
+                try {
+                    const sender = await User.findOne({
+                        where: { username: usernameSender },
+                    });
+                    const receiver = await User.findOne({
+                        where: { username: usernameReceiver },
+                    });
+
+                    if (sender && receiver) {
+                        const request = await Request.create({
+                            senderId: sender.id,
+                            receiverId: receiver.id,
+                            callId: callId,
+                        });
+                        socket
+                            .to(`notify-${usernameReceiver}`)
+                            .emit("newRequest", {
+                                usernameSender: usernameSender,
+                                callId: callId,
+                            });
+                    } else {
+                        socket.emit("errorInvitation", "Invalid Username");
+                    }
+                } catch (error) {
+                    console.log("Error on sending invitation", error);
+                }
+            }
+        );
     });
 }
 
