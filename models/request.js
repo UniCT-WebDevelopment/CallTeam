@@ -21,7 +21,7 @@ const Request = sequelize.define("request", {
         primaryKey: true,
     },
     callId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         references: {
             model: Call,
             key: "id",

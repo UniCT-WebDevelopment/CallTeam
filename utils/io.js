@@ -1,6 +1,6 @@
 const CallParticipants = require("../models/callParticipants");
 const User = require("../models/user");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const { getUsernameById } = require("./db");
 const Call = require("../models/call");
 const Request = require("../models/request");
@@ -9,9 +9,10 @@ function handleIoConnection(io) {
     io.on("connection", (socket) => {
         console.log("User connected to io:", socket.id);
 
-        socket.on("joinNotifyRoom", (username) =>
-            socket.join(`notify-${username}`)
-        );
+        socket.on("joinNotifyRoom", (username) => {
+            socket.join(`notify-${username}`);
+            console.log(`${username} joined his notify room`);
+        });
 
         //join call event -> communicate to other user in call that user joined
         socket.on("joinCall", async (idPeer, callId, userId) => {
@@ -66,7 +67,7 @@ function handleIoConnection(io) {
 
         socket.on(
             "sendInvitation",
-            async (usernameSender, usernameReceiver, callId) => {
+            async (usernameSender, usernameReceiver, callId, callback) => {
                 try {
                     const sender = await User.findOne({
                         where: { username: usernameSender },
@@ -76,11 +77,20 @@ function handleIoConnection(io) {
                     });
 
                     if (sender && receiver) {
-                        const request = await Request.create({
-                            senderId: sender.id,
-                            receiverId: receiver.id,
-                            callId: callId,
+                        let request = await Request.findOne({
+                            where: {
+                                senderId: sender.id,
+                                receiverId: receiver.id,
+                                callId: callId,
+                            },
                         });
+                        if (!request)
+                            await Request.create({
+                                senderId: sender.id,
+                                receiverId: receiver.id,
+                                callId: callId,
+                            });
+                        callback("ok");
                         socket
                             .to(`notify-${usernameReceiver}`)
                             .emit("newRequest", {
@@ -88,10 +98,36 @@ function handleIoConnection(io) {
                                 callId: callId,
                             });
                     } else {
+                        callback("Bad Request");
                         socket.emit("errorInvitation", "Invalid Username");
                     }
                 } catch (error) {
                     console.log("Error on sending invitation", error);
+                }
+            }
+        );
+
+        socket.on(
+            "acceptedInvitation",
+            async (usernameSender, usernameReceiver, callId) => {
+                try {
+                    const sender = await User.findOne({
+                        where: { username: usernameSender },
+                    });
+                    const receiver = await User.findOne({
+                        where: { username: usernameReceiver },
+                    });
+
+                    if (sender && receiver && callId)
+                        await Request.destroy({
+                            where: {
+                                senderId: sender.id,
+                                receiverId: receiver.id,
+                                callId: callId,
+                            },
+                        });
+                } catch (error) {
+                    console.log("Error on accepting invitation", error);
                 }
             }
         );

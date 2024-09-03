@@ -22,6 +22,15 @@ const utilities = {
         const date = new Date();
         return `${date.getHours()}:${date.getMinutes()}`;
     },
+    updateInfoUi: function () {
+        const container = document.querySelector("#footer #call-info");
+        container.innerHTML =
+            this.getCurrentHour() + " | " + windowState.callId;
+        setInterval(() => {
+            container.innerHTML =
+                this.getCurrentHour() + " | " + windowState.callId;
+        }, 60 * 1000);
+    },
     updateChatUi: (username, message) => {
         username = username == windowState.username ? "Tu" : username;
         const msgsContainer = document.getElementById(
@@ -287,6 +296,21 @@ const listenToSocketEvents = () => {
     socket.on("newChatMessage", (username, message) => {
         utilities.updateChatUi(username, message);
     });
+
+    socket.on("errorInvitation", (errorMsg) => {
+        const inputUsername = document.getElementById("username-to-search");
+        const container = inputUsername.parentElement;
+
+        const error = document.createElement("p");
+        error.className = "text-red-800 font-semibold text-sm";
+        error.innerHTML = errorMsg;
+        //container.appendChild(error);
+        container.insertAdjacentElement("afterend", error);
+
+        setTimeout(() => {
+            error.remove();
+        }, 2000);
+    });
 };
 
 const getAndSendStream = async () => {
@@ -485,18 +509,35 @@ const leaveCall = () => {
 
 const sendInvitation = () => {
     const inputUsername = document.getElementById("username-to-search");
-
+    const container = inputUsername.parentElement;
     if (!inputUsername.value) {
-        const container = inputUsername.parentElement;
-        const error = document.createElement("div");
-        error.className = "text-red text-sm";
-        container.appendChild(error);
+        const error = document.createElement("p");
+        error.className = "text-red-800 font-semibold text-sm";
+        error.innerHTML = "Invalid Username";
+        //container.appendChild(error);
+        container.insertAdjacentElement("afterend", error);
+
+        setTimeout(() => {
+            error.remove();
+        }, 2000);
     } else {
         socket.emit(
             "sendInvitation",
             windowState.username,
             inputUsername.value,
-            windowState.callId
+            windowState.callId,
+            (response) => {
+                if (response == "ok") {
+                    const feedback = document.createElement("p");
+                    feedback.className = "text-green-800 font-semibold text-sm";
+                    feedback.innerHTML = "Invitation correctly sent";
+                    container.appendChild(feedback);
+
+                    setTimeout(() => {
+                        feedback.remove();
+                    }, 2000);
+                }
+            }
         );
     }
 };
@@ -727,6 +768,7 @@ const closeSidebar = () => {
 $(async () => {
     console.log("Peer id:", windowState.idPeer);
     console.log("call id:", $("#callId").val());
+    utilities.updateInfoUi();
 
     await createPeer();
     listenToSocketEvents();

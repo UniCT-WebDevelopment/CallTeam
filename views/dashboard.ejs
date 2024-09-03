@@ -7,6 +7,8 @@
         <link rel="stylesheet" href="/assets/css/output.css" />
     </head>
     <body class="bg-gray-950 text-white h-full overflow-hidden">
+        <input type="hidden" id="userId" value="<%= userId %>" />
+        <input type="hidden" id="username" value="<%= username %>" />
         <div id="header" class="flex justify-between p-2 h-16 bg-gray-900">
             <img
                 width="48"
@@ -37,11 +39,14 @@
                         id="notify-container"
                         class="hidden absolute top-10 -left-60 w-80 bg-gray-800 shadow-lg p-1 rounded-lg"
                     >
-                        <div class="font-bold text-center mb-2">Notifiche</div>
+                        <div class="font-bold text-center mb-2">
+                            Notifications
+                        </div>
                         <ul
+                            id="list-notifications"
                             class="divide-y divide-gray-700 max-h-80 overflow-auto"
                         >
-                            <li
+                            <!-- <li
                                 class="py-2 px-1 flex justify-between items-center"
                             >
                                 <span class="text-sm text-wrap max-w-36"
@@ -54,8 +59,7 @@
                                 >
                                     Accetta
                                 </div>
-                                <!-- <button>Accetta</button> -->
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                 </button>
@@ -83,13 +87,13 @@
         </div>
 
         <div
-            class="w-full h-full flex flex-col lg:flex-row items-center justify-evenly"
+            class="w-full h-full flex flex-col lg:flex-row items-center justify-center"
         >
             <div id="create-call-container" class="p-1 sm:p-3 sm:m-2">
                 <div
                     class="text-center md:text-left font-extrabold text-2xl my-4 mx-2 p-2"
                 >
-                    Chiama chi vuoi
+                    Call who you want
                 </div>
                 <div
                     id="action-call-container"
@@ -97,16 +101,16 @@
                 >
                     <button
                         id="btn-new-call"
-                        class="transition-all bg-green-900 font-medium hover:bg-green-800 rounded-lg p-2 mx-4"
+                        class="transition-all bg-green-900 font-semibold hover:bg-green-800 rounded-lg p-2 mx-4"
                     >
-                        Nuova Riunione
+                        New Call
                     </button>
                     <div id="existing-call-group" class="flex items-center">
                         <input
                             id="callId"
                             type="text"
                             class="transition-all bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:bg-gray-800 focus:ring-green-900 focus:border-green-900 p-2 mx-1 placeholder:text-gray-400"
-                            placeholder="Inserisci un codice"
+                            placeholder="Insert a code"
                         /><button
                             id="btn-participate-call"
                             class="transition-all relative bg-green-900 hover:bg-green-800 rounded-lg p-2 mx-1 font-medium inline-flex items-center"
@@ -126,13 +130,15 @@
                                 />
                             </svg>
 
-                            <p class="hidden sm:inline-block">Partecipa</p>
+                            <p class="hidden sm:inline-block font-semibold">
+                                Join
+                            </p>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div id="friends-online" class="p-3 m-2 w-80">
+            <!-- <div id="friends-online" class="p-3 m-2 w-80">
                 <div class="font-bold text-xl text-center my-4">
                     Chiamate recenti
                 </div>
@@ -237,9 +243,10 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
         </div>
 
+        <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="/assets/js/dashboard.js"></script>
     </body>
