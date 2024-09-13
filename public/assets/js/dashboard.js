@@ -16,7 +16,6 @@ const addErrorFeedback = (errorMsg) => {
 };
 
 const getNewCall = async () => {
-    $("#btn-new-call").addClass("animate-spin");
     const response = await fetch("/api/newCall", {
         method: "POST",
     });
